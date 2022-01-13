@@ -28,31 +28,40 @@ test('renders ONE error message if user enters less then 5 characters into first
 
 test('renders THREE error messages if user enters no values into any fields.', async () => {
   render(<ContactForm/>);
-  const fNameInput = screen.getByLabelText(/First Name*/i);
-  const lNameInput = screen.getByLabelText(/Last Name*/i);
-  const emailInput = screen.getByLabelText(/Email*/i);
+  const button = screen.getByRole("button");
 
-  userEvent.type(fNameInput, " ");
-  userEvent.type(fNameInput, '{backspace}');
-  userEvent.type(lNameInput, " ");
-  userEvent.type(lNameInput, '{backspace}');
-  userEvent.type(emailInput, " ");
-  userEvent.type(emailInput, '{backspace}');
+  userEvent.click(button);
 
   const fNameError = await screen.getByText(/firstName must have at least 5 characters/i);
   const lNameError = await screen.getByText(/lastName is a required field/i);
   const emailError = await screen.getByText(/email must be a valid email address/i);
+
   expect(fNameError).toBeInTheDocument();
   expect(lNameError).toBeInTheDocument();
   expect(emailError).toBeInTheDocument();
 });
 
 test('renders ONE error message if user enters a valid first name and last name but no email.', async () => {
-    
+  render(<ContactForm/>);
+  const fNameInput = screen.getByLabelText(/First Name*/i);
+  const lNameInput = screen.getByLabelText(/Last Name*/i); 
+  const button = screen.getByRole("button");
+
+  userEvent.type(fNameInput, "Jeevan");
+  userEvent.type(lNameInput, "DeMartini");
+  userEvent.click(button);
+
+  const emailError = await screen.getByText(/email must be a valid email address/i);
+  expect(emailError).toBeInTheDocument();
 });
 
 test('renders "email must be a valid email address" if an invalid email is entered', async () => {
-    
+  render(<ContactForm/>);
+  const emailInput = screen.getByLabelText(/Email*/i);
+  userEvent.type(emailInput, "Sean");
+
+  const emailError = await screen.getByText(/email must be a valid email address/i);
+  expect(emailError).toBeInTheDocument();
 });
 
 test('renders "lastName is a required field" if an last name is not entered and the submit button is clicked', async () => {
